@@ -13,8 +13,18 @@
 RingModAudioProcessorEditor::RingModAudioProcessorEditor (RingModAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
+    addAndMakeVisible(rateDial);
+    rateDial.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+    rateDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    rateDial.setRange(20, 4000, 0.01);
+    rateDial.setValue(20);
+    rateDial.addListener(this);
+    
+    rateDial.setLookAndFeel(&rateDialLookAndFeel);
+    
+    addAndMakeVisible(bypassButton);
+    bypassButton.setLookAndFeel(&bypassBtnLookAndFeel);
+    
     setSize (400, 300);
 }
 
@@ -41,6 +51,21 @@ void RingModAudioProcessorEditor::paint (juce::Graphics& g)
 
 void RingModAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    juce::Point<int> rsCentrePoint = getLocalBounds().getCentre();
+    juce::Rectangle<int> rsWindowArea = getLocalBounds();
+    
+    rsWindowArea.setWidth(getWidth() / 4);
+    rsWindowArea.setHeight(getWidth() / 4);
+    rsWindowArea.setCentre(rsCentrePoint);
+    
+    rateDial.setBounds(rsWindowArea);
+    bypassButton.setBounds(20, 20, 100, 100);
+}
+
+void RingModAudioProcessorEditor::sliderValueChanged(juce::Slider *slider)
+{
+    if (slider == &rateDial)
+    {
+        audioProcessor.frequency = rateDial.getValue();
+    }
 }

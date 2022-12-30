@@ -51,18 +51,21 @@ public:
     void setCurrentProgram (int index) override;
     const juce::String getProgramName (int index) override;
     void changeProgramName (int index, const juce::String& newName) override;
+    void setFequency (float _frequency);
 
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    
+    double frequency;
 
 private:
     juce::Array <float> waveTable;
     double waveTableSize;
-    double frequency;
     double phase;
     double increment;
     float amp;
+    juce::LinearSmoothedValue <float> smoothedFrequency { 20 };
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RingModAudioProcessor)

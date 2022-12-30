@@ -90,10 +90,15 @@ void RingModAudioProcessor::changeProgramName (int index, const juce::String& ne
 {
 }
 
+void RingModAudioProcessor::setFequency(float _frequency)
+{
+    frequency = _frequency;
+}
+
 //==============================================================================
 void RingModAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    frequency = 440;
+    frequency = 20;
     waveTableSize = 1024;
     phase = 0;
     increment = frequency * waveTableSize / sampleRate;
@@ -103,6 +108,8 @@ void RingModAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     {
         waveTable.insert(i, sin(2.0 * juce::MathConstants<double>::pi * i / waveTableSize));
     }
+    
+    smoothedFrequency.reset(sampleRate, 0.0005);
 }
 
 void RingModAudioProcessor::releaseResources()
@@ -155,6 +162,8 @@ void RingModAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
         right[sample] *= waveTable[(int)phase] * amp;
         phase = fmod ((phase + increment), waveTableSize);
     }
+    smoothedFrequency.setTargetValue(frequency);
+    increment = smoothedFrequency.getNextValue() * waveTableSize / getSampleRate();
 }
 
 //==============================================================================

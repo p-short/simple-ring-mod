@@ -102,7 +102,7 @@ void RingModAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     waveTableSize = 1024;
     phase = 0;
     increment = frequency * waveTableSize / sampleRate;
-    amp = 0.5f;
+    amp = 1.f;
     
     for (int i = 0; i < waveTableSize; i++)
     {
@@ -153,14 +153,29 @@ void RingModAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    auto* left = buffer.getWritePointer(0, 0);
-    auto* right = buffer.getWritePointer(1, 0);
+    auto* left = buffer.getWritePointer(0);
+    auto* right = buffer.getWritePointer(1);
 
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
     {
-        left[sample] *= waveTable[(int)phase] * amp;
-        right[sample] *= waveTable[(int)phase] * amp;
-        phase = fmod ((phase + increment), waveTableSize);
+        if (on)
+        {
+            left[sample] *= waveTable[(int)phase] * amp;
+            right[sample] *= waveTable[(int)phase] * amp;
+            phase = fmod ((phase + increment), waveTableSize);
+            
+            //convert the overall signal from [-1, 1] to [0, 1]
+            float uniPolarSig = (left[sample] + 1) * 0.5;
+            //store inside atomic to be loaded from the GUI thread
+            ap_ColourInterpVal.store(uniPolarSig);
+        }
+        
+        else if (!on)
+        {
+            left[sample] *= amp;
+            right[sample] *= amp;
+        }
+
     }
     smoothedFrequency.setTargetValue(frequency);
     increment = smoothedFrequency.getNextValue() * waveTableSize / getSampleRate();

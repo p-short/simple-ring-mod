@@ -58,6 +58,8 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     
     double frequency;
+    std::atomic <float> ap_ColourInterpVal { 0 };
+    bool on { true };
 
 private:
     juce::Array <float> waveTable;

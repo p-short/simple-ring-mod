@@ -12,6 +12,10 @@
             file="Source/PluginEditor.cpp"/>
       <FILE id="mXuLRV" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
+    <GROUP id="{4A25F28D-E813-3907-04FA-DB94C6E22DBD}" name="resources">
+      <FILE id="XcRZVU" name="ImpactLabel-lVYZ.ttf" compile="0" resource="1"
+            file="resources/ImpactLabel-lVYZ.ttf"/>
+    </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
   <EXPORTFORMATS>
